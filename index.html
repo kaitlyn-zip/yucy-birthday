@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Note: Need to add Powder (cat) animation, sakura blossoms animation, and text bubble with interactive text-->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Yucy!</title>
+    <!-- Sakura Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: url('Assets/Cursor/aero_arrow.cur'), auto;
+        }
+
+        *:active {
+            cursor: url('Assets/Cursor/aero_move.cur'), auto;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .background {
+            position: fixed;
+            top: -20px;
+            left: -20px;
+            width: calc(100% + 40px);
+            height: calc(100% + 40px);
+            background-image: url('Assets/background.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: transform 0.1s ease-out;
+        }
+
+        .character-container {
+            position: fixed;
+            bottom: 2%;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 20%;
+            z-index: 10;
+            transition: transform 0.1s ease-out;
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+        }
+
+        .powder {
+            height: 50%;
+            width: auto;
+            image-rendering: pixelated;
+            pointer-events: auto;
+            cursor: url('Assets/Cursor/aero_link.ani'), url('Assets/Cursor/aero_arrow.cur'), pointer;
+            transform-origin: center bottom;
+        }
+
+        .powder.pop {
+            animation: popEffect 0.3s ease-out;
+        }
+
+        .character {
+            height: 100%;
+            width: auto;
+            pointer-events: auto;
+            cursor: url('Assets/Cursor/aero_link.ani'), url('Assets/Cursor/aero_arrow.cur'), pointer;
+            transform-origin: center bottom;
+        }
+
+        .character.pop {
+            animation: popEffect 0.3s ease-out;
+        }
+
+        @keyframes popEffect {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .sakura-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .settings-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid #FFB7C5;
+            border-radius: 10px;
+            cursor: url('Assets/Cursor/aero_link.ani'), url('Assets/Cursor/aero_arrow.cur'), pointer;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 10px rgba(255, 154, 173, 0.3);
+        }
+
+        .settings-btn:hover {
+            background: rgba(255, 183, 197, 0.4);
+            transform: scale(1.1);
+        }
+
+        .settings-btn:active {
+            transform: scale(0.95);
+        }
+
+        .settings-btn.active {
+            background: rgba(255, 183, 197, 0.6);
+        }
+
+        .settings-icon {
+            width: 22px;
+            height: 22px;
+            transition: transform 0.3s ease;
+        }
+
+        .settings-btn.active .settings-icon {
+            transform: rotate(90deg);
+        }
+
+        .control-panel {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 4px solid #FFB7C5;
+            border-radius: 12px;
+            padding: 12px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 
+                0 4px 15px rgba(255, 154, 173, 0.3),
+                inset 0 0 15px rgba(255, 209, 220, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px) scale(0.95);
+            transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+        }
+
+        .control-panel.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 8px;
+            color: #FF6B88;
+            min-width: 45px;
+        }
+
+        .control-btn {
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #FFB7C5;
+            border-radius: 6px;
+            cursor: url('Assets/Cursor/aero_link.ani'), url('Assets/Cursor/aero_arrow.cur'), pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.1s, border-color 0.2s;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 183, 197, 0.4);
+            transform: scale(1.1);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn.active {
+            background: rgba(255, 183, 197, 0.6);
+            border-color: #FF6B88;
+        }
+
+        .control-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .music-controls {
+            display: flex;
+            gap: 5px;
+        }
+
+        .progress-container {
+            flex: 1;
+            height: 10px;
+            background: rgba(255, 209, 220, 0.5);
+            border: 2px solid #FFB7C5;
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: url('Assets/Cursor/aero_link.ani'), url('Assets/Cursor/aero_arrow.cur'), pointer;
+            min-width: 80px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #FF6B88, #FFB7C5);
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+
+        .divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #FFD1DC, transparent);
+            margin: 2px 0;
+        }
+
+        .typewriter-container {
+            position: fixed;
+            top: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 20px 35px;
+            border-radius: 12px;
+            border: 4px solid #FFB7C5;
+            box-shadow: 
+                0 4px 15px rgba(255, 154, 173, 0.4),
+                0 0 30px rgba(255, 183, 197, 0.3),
+                inset 0 0 20px rgba(255, 209, 220, 0.3);
+            max-width: 90%;
+            width: auto;
+            min-width: 300px;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .typewriter-container.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .typewriter-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(16px, 4vw, 32px);
+            color: #FF6B88;
+            text-shadow: 
+                2px 2px 0px #FFB7C5,
+                4px 4px 0px #FFD1DC,
+                0 0 10px rgba(255, 107, 136, 0.5);
+            letter-spacing: 2px;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .body-message {
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(8px, 1.5vw, 12px);
+            color: #FF8FA3;
+            line-height: 2.2;
+            margin-top: 20px;
+            text-align: left;
+            text-shadow: 1px 1px 0px #FFD1DC;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .body-message.visible {
+            opacity: 1;
+        }
+
+        .body-cursor {
+            display: inline-block;
+            background-color: #FF8FA3;
+            width: 2px;
+            height: 12px;
+            margin-left: 2px;
+            animation: blink 0.7s infinite;
+        }
+
+        .typewriter-cursor {
+            display: inline-block;
+            background-color: #FF6B88;
+            width: 4px;
+            margin-left: 4px;
+            animation: blink 0.7s infinite;
+            box-shadow: 0 0 8px rgba(255, 107, 136, 0.6);
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFF0F3 0%, #FFE4EC 50%, #FFD6E0 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s ease, transform 0.8s ease;
+        }
+
+        .loading-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(1.1);
+        }
+
+        .loading-sakura {
+            font-size: 60px;
+            animation: floatBounce 1.5s ease-in-out infinite;
+        }
+
+        .loading-text {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 14px;
+            color: #FF6B88;
+            margin-top: 30px;
+            text-shadow: 2px 2px 0px #FFB7C5;
+        }
+
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots span {
+            animation: dotPulse 1.4s infinite;
+            opacity: 0;
+        }
+
+        .loading-dots span:nth-child(1) { animation-delay: 0s; }
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        .loading-bar-container {
+            width: 200px;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 3px solid #FFB7C5;
+            border-radius: 6px;
+            margin-top: 25px;
+            overflow: hidden;
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #FF6B88, #FFB7C5);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .loading-petals {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .loading-petal {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0.6;
+            animation: petalFall linear infinite;
+        }
+
+        @keyframes floatBounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-15px) rotate(-5deg); }
+            75% { transform: translateY(-15px) rotate(5deg); }
+        }
+
+        @keyframes dotPulse {
+            0%, 60%, 100% { opacity: 0; }
+            30% { opacity: 1; }
+        }
+
+        @keyframes petalFall {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Main content initially hidden */
+        .main-content {
+            opacity: 0;
+            transition: opacity 0.6s ease 0.3s;
+        }
+
+        .main-content.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-petals" id="loadingPetals"></div>
+        <div class="loading-sakura">🌸</div>
+        <div class="loading-text">Loading<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loadingBar"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+    <div class="background" id="background"></div>
+    <canvas class="sakura-canvas" id="sakuraCanvas"></canvas>
+    
+    <!-- Settings Button -->
+    <button class="settings-btn" id="settingsBtn" title="Settings">
+        <svg class="settings-icon" viewBox="0 0 24 24" fill="none" stroke="#FFB7C5" stroke-width="2.5">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+        </svg>
+    </button>
+    
+    <!-- Control Panel -->
+    <audio id="bgMusic" loop>
+        <source src="Assets/Music.mp3" type="audio/mpeg">
+    </audio>
+    <div class="control-panel">
+        <div class="control-row">
+            <span class="control-label">MUSIC</span>
+            <div class="music-controls">
+                <button class="control-btn" id="playBtn" title="Play">
+                    <svg class="control-icon" viewBox="0 0 20 20" fill="#FFB7C5">
+                        <polygon points="5,3 17,10 5,17"/>
+                    </svg>
+                </button>
+                <button class="control-btn" id="pauseBtn" title="Pause">
+                    <svg class="control-icon" viewBox="0 0 20 20" fill="#FFB7C5">
+                        <rect x="3" y="3" width="5" height="14"/>
+                        <rect x="12" y="3" width="5" height="14"/>
+                    </svg>
+                </button>
+                <button class="control-btn" id="stopBtn" title="Stop">
+                    <svg class="control-icon" viewBox="0 0 20 20" fill="#FFB7C5">
+                        <rect x="4" y="4" width="12" height="12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="control-row">
+            <span class="control-label"></span>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="control-row">
+            <span class="control-label">PETALS</span>
+            <button class="control-btn" id="sakuraToggle" title="Toggle Sakura Petals">
+                <svg class="control-icon" id="toggleIcon" viewBox="0 0 20 20">
+                    <ellipse cx="10" cy="4" rx="3" ry="4" fill="#FFB7C5"/>
+                    <ellipse cx="4" cy="8" rx="3" ry="4" fill="#FFB7C5" transform="rotate(-45 4 8)"/>
+                    <ellipse cx="16" cy="8" rx="3" ry="4" fill="#FFB7C5" transform="rotate(45 16 8)"/>
+                    <ellipse cx="6" cy="15" rx="3" ry="4" fill="#FFB7C5" transform="rotate(-20 6 15)"/>
+                    <ellipse cx="14" cy="15" rx="3" ry="4" fill="#FFB7C5" transform="rotate(20 14 15)"/>
+                    <circle cx="10" cy="10" r="3" fill="#FFE4B5"/>
+                </svg>
+            </button>
+        </div>
+        <div class="divider"></div>
+        <div class="control-row">
+            <span class="control-label">MESSAGE</span>
+            <button class="control-btn active" id="messageToggle" title="Toggle Message">
+                <svg class="control-icon" viewBox="0 0 20 20" fill="#FFB7C5">
+                    <rect x="2" y="4" width="16" height="12" rx="2"/>
+                    <path d="M2 6l8 5 8-5" stroke="#fff" stroke-width="1.5" fill="none"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="character-container" id="characterContainer">
+        <img src="Assets/Powder.gif" alt="Powder the cat" class="powder" id="powder">
+        <img src="Assets/Y_Sit_Default_02.png" alt="Yucy" class="character" id="character">
+    </div>
+    <div class="typewriter-container">
+        <div><span class="typewriter-text" id="typewriterText"></span><span class="typewriter-cursor" id="cursor"></span></div>
+        <p class="body-message" id="bodyMessage"><span id="bodyText"></span><span class="body-cursor" id="bodyCursor"></span></p>
+    </div>
+
+    <script>
+        // Main site script
+        (function() {
+        const background = document.getElementById('background');
+        const character = document.getElementById('character');
+        const characterContainer = document.getElementById('characterContainer');
+        
+        // Sprite Animation System
+        const sprites = {
+            cry: 'Assets/Y_Sit_Cry_02.png',
+            default: 'Assets/Y_Sit_Default_02.png',
+            smile: 'Assets/Y_Sit_Smile_02.png',
+            shine: 'Assets/Y_Sit_Shine_02.png'
+        };
+
+        // Preload all sprites to prevent flicker when switching
+        Object.values(sprites).forEach(src => {
+            const img = new Image();
+            img.src = src;
+        });
+
+        // Current sprite state
+        let currentSprite = 'default';
+
+        // Function to change sprite with optional pop effect
+        function setSprite(spriteName, withPop = false) {
+            if (sprites[spriteName]) {
+                currentSprite = spriteName;
+                character.src = sprites[spriteName];
+                
+                if (withPop) {
+                    character.classList.remove('pop');
+                    // Trigger reflow to restart animation
+                    void character.offsetWidth;
+                    character.classList.add('pop');
+                }
+            }
+        }
+
+        // Hover interaction
+        character.addEventListener('mouseenter', () => {
+            const hoverSprites = ['shine', 'smile'];
+            const randomSprite = hoverSprites[Math.floor(Math.random() * hoverSprites.length)];
+            setSprite(randomSprite, true);
+        });
+
+        character.addEventListener('mouseleave', () => {
+            setSprite('default', true);
+        });
+
+        // Powder hover interaction
+        const powder = document.getElementById('powder');
+        
+        powder.addEventListener('mouseenter', () => {
+            powder.classList.remove('pop');
+            void powder.offsetWidth;
+            powder.classList.add('pop');
+        });
+
+        // Parallax effect
+        document.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 2;
+            const y = (e.clientY / window.innerHeight - 0.5) * 2;
+            
+            const bgMoveX = x * 10;
+            const bgMoveY = y * 10;
+            
+            const charMoveX = x * 15;
+            const charMoveY = y * 15;
+            
+            background.style.transform = `translate(${bgMoveX}px, ${bgMoveY}px)`;
+            characterContainer.style.transform = `translateX(-50%) translate(${charMoveX}px, ${charMoveY}px)`;
+        });
+
+        // Sakura Petal Animation System
+        const sakuraCanvas = document.getElementById('sakuraCanvas');
+        const ctx = sakuraCanvas.getContext('2d');
+
+        function resizeCanvas() {
+            sakuraCanvas.width = window.innerWidth;
+            sakuraCanvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Pixel art petal shapes (different rotations/styles)
+        const petalShapes = [
+            // Shape 1: Classic petal
+            [
+                [0,0,1,1,0],
+                [0,1,1,1,1],
+                [1,1,1,1,0],
+                [0,1,1,0,0],
+                [0,0,1,0,0]
+            ],
+            // Shape 2: Round petal
+            [
+                [0,1,1,0],
+                [1,1,1,1],
+                [1,1,1,1],
+                [0,1,1,0]
+            ],
+            // Shape 3: Small petal
+            [
+                [0,1,1],
+                [1,1,1],
+                [0,1,0]
+            ],
+            // Shape 4: Diagonal petal
+            [
+                [1,1,0,0],
+                [0,1,1,0],
+                [0,0,1,1],
+                [0,0,0,1]
+            ]
+        ];
+
+        // Pink color palette for petals
+        const petalColors = [
+            '#FFB7C5',
+            '#FF9AAD',
+            '#FFC0CB',
+            '#FFD1DC',
+            '#FFAEC0'
+        ];
+
+        class SakuraPetal {
+            constructor() {
+                this.reset();
+                this.y = Math.random() * -sakuraCanvas.height;
+                this.opacity = 1;
+            }
+
+            reset() {
+                this.x = Math.random() * sakuraCanvas.width;
+                this.y = -20;
+                this.shape = petalShapes[Math.floor(Math.random() * petalShapes.length)];
+                this.color = petalColors[Math.floor(Math.random() * petalColors.length)];
+                this.pixelSize = Math.floor(Math.random() * 2) + 2; // 2-3px per pixel
+                this.speedY = Math.random() * 1 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.swayAmount = Math.random() * 2 + 1;
+                this.swaySpeed = Math.random() * 0.02 + 0.01;
+                this.swayOffset = Math.random() * Math.PI * 2;
+                this.rotation = 0;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+                this.opacity = 1;
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX + Math.sin(this.y * this.swaySpeed + this.swayOffset) * this.swayAmount * 0.1;
+                this.rotation += this.rotationSpeed;
+
+                if (this.y > sakuraCanvas.height + 20) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                if (this.opacity <= 0) return;
+                
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+
+                const shape = this.shape;
+                const size = this.pixelSize;
+                const offsetX = -(shape[0].length * size) / 2;
+                const offsetY = -(shape.length * size) / 2;
+
+                ctx.fillStyle = this.color;
+                for (let row = 0; row < shape.length; row++) {
+                    for (let col = 0; col < shape[row].length; col++) {
+                        if (shape[row][col]) {
+                            ctx.fillRect(
+                                offsetX + col * size,
+                                offsetY + row * size,
+                                size,
+                                size
+                            );
+                        }
+                    }
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // Create petals
+        const petals = [];
+        const petalCount = 40;
+        for (let i = 0; i < petalCount; i++) {
+            petals.push(new SakuraPetal());
+        }
+
+        // Animation state
+        let sakuraPlaying = true;
+        let isFading = false;
+        let animationId = null;
+
+        // Toggle button
+        const sakuraToggle = document.getElementById('sakuraToggle');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        sakuraToggle.addEventListener('click', () => {
+            if (sakuraPlaying && !isFading) {
+                // Start fading out
+                isFading = true;
+                toggleIcon.style.opacity = '0.4';
+            } else if (!sakuraPlaying) {
+                // Reset and start playing
+                sakuraPlaying = true;
+                petals.forEach(petal => {
+                    petal.reset();
+                    petal.y = Math.random() * -sakuraCanvas.height; // Stagger from above
+                });
+                toggleIcon.style.opacity = '1';
+                animateSakura();
+            }
+        });
+
+        // Animation loop
+        function animateSakura() {
+            ctx.clearRect(0, 0, sakuraCanvas.width, sakuraCanvas.height);
+
+            let allFaded = true;
+
+            petals.forEach(petal => {
+                if (isFading) {
+                    petal.opacity -= 0.02;
+                    if (petal.opacity > 0) allFaded = false;
+                } else if (sakuraPlaying) {
+                    petal.update();
+                }
+                petal.draw();
+            });
+
+            if (isFading && allFaded) {
+                isFading = false;
+                sakuraPlaying = false;
+                ctx.clearRect(0, 0, sakuraCanvas.width, sakuraCanvas.height);
+                return;
+            }
+
+            animationId = requestAnimationFrame(animateSakura);
+        }
+
+        animateSakura();
+
+        // Typewriter Animation
+        const typewriterText = document.getElementById('typewriterText');
+        const cursor = document.getElementById('cursor');
+        const bodyMessage = document.getElementById('bodyMessage');
+        const bodyText = document.getElementById('bodyText');
+        const bodyCursor = document.getElementById('bodyCursor');
+        
+        const titleMessage = "Happy Birthday Yucy!";
+        const bodyContent = "I hope you have an absolutely amazing birthday today you beautiful, smart queen! I know your love for Maplestory is never-ending, so I thought this little website with a character that looked like you would be really cute! I hope you're healthy and doing well~!\n\nHappy Birthday, miss you lots!\n\nLove, Kaitlyn";
+        
+        let charIndex = 0;
+        let bodyCharIndex = 0;
+
+        function typeTitle() {
+            if (charIndex < titleMessage.length) {
+                typewriterText.textContent += titleMessage.charAt(charIndex);
+                cursor.style.height = window.getComputedStyle(typewriterText).fontSize;
+                charIndex++;
+                setTimeout(typeTitle, 150);
+            } else {
+                // Hide title cursor and start body message
+                setTimeout(() => {
+                    cursor.style.animation = 'none';
+                    cursor.style.opacity = '0';
+                    // Show body message container and start typing
+                    bodyMessage.classList.add('visible');
+                    setTimeout(typeBody, 300);
+                }, 800);
+            }
+        }
+
+        function typeBody() {
+            if (bodyCharIndex < bodyContent.length) {
+                const char = bodyContent.charAt(bodyCharIndex);
+                if (char === '\n') {
+                    bodyText.innerHTML += '<br>';
+                } else {
+                    bodyText.innerHTML += char;
+                }
+                bodyCharIndex++;
+                setTimeout(typeBody, 50);
+            } else {
+                // Hide body cursor after typing completes
+                setTimeout(() => {
+                    bodyCursor.style.animation = 'none';
+                    bodyCursor.style.opacity = '0';
+                }, 1500);
+            }
+        }
+
+        // Start typewriter after a short delay
+        setTimeout(typeTitle, 500);
+
+        // Music Player Controls
+        const bgMusic = document.getElementById('bgMusic');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const stopBtn = document.getElementById('stopBtn');
+
+        // Progress Bar
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+
+        function updateProgressBar() {
+            if (bgMusic.duration) {
+                const progress = (bgMusic.currentTime / bgMusic.duration) * 100;
+                progressBar.style.width = progress + '%';
+            }
+            requestAnimationFrame(updateProgressBar);
+        }
+        updateProgressBar();
+
+        // Click to seek
+        progressContainer.addEventListener('click', (e) => {
+            const rect = progressContainer.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const percentage = clickX / rect.width;
+            bgMusic.currentTime = percentage * bgMusic.duration;
+        });
+
+        function updateMusicButtons() {
+            playBtn.classList.remove('active');
+            pauseBtn.classList.remove('active');
+            stopBtn.classList.remove('active');
+            
+            if (!bgMusic.paused && !bgMusic.ended) {
+                playBtn.classList.add('active');
+            } else if (bgMusic.paused && bgMusic.currentTime > 0) {
+                pauseBtn.classList.add('active');
+            } else {
+                stopBtn.classList.add('active');
+            }
+        }
+
+        playBtn.addEventListener('click', () => {
+            bgMusic.play();
+            updateMusicButtons();
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            bgMusic.pause();
+            updateMusicButtons();
+        });
+
+        stopBtn.addEventListener('click', () => {
+            bgMusic.pause();
+            bgMusic.currentTime = 0;
+            updateMusicButtons();
+        });
+
+        // Update buttons when music ends
+        bgMusic.addEventListener('ended', updateMusicButtons);
+        bgMusic.addEventListener('play', updateMusicButtons);
+        bgMusic.addEventListener('pause', updateMusicButtons);
+
+        // Initialize button state
+        updateMusicButtons();
+
+        // Settings Panel Toggle
+        const settingsBtn = document.getElementById('settingsBtn');
+        const controlPanel = document.querySelector('.control-panel');
+
+        settingsBtn.addEventListener('click', () => {
+            settingsBtn.classList.toggle('active');
+            controlPanel.classList.toggle('visible');
+        });
+
+        // Message Toggle
+        const messageToggle = document.getElementById('messageToggle');
+        const typewriterContainer = document.querySelector('.typewriter-container');
+
+        messageToggle.addEventListener('click', () => {
+            messageToggle.classList.toggle('active');
+            typewriterContainer.classList.toggle('hidden');
+        });
+
+        })(); // End of main script wrapped in IIFE
+
+        // Loading Screen Logic (runs immediately)
+        (function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const loadingBar = document.getElementById('loadingBar');
+            const loadingPetals = document.getElementById('loadingPetals');
+            const mainContent = document.getElementById('mainContent');
+
+            // Create falling petals for loading screen
+            for (let i = 0; i < 15; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'loading-petal';
+                petal.textContent = '🌸';
+                petal.style.left = Math.random() * 100 + '%';
+                petal.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                petal.style.animationDelay = (Math.random() * 2) + 's';
+                petal.style.fontSize = (Math.random() * 15 + 15) + 'px';
+                loadingPetals.appendChild(petal);
+            }
+
+            // Simulate loading progress
+            let progress = 0;
+            const loadingInterval = setInterval(() => {
+                progress += Math.random() * 15 + 5;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(loadingInterval);
+                    
+                    // Finish loading
+                    setTimeout(() => {
+                        loadingScreen.classList.add('fade-out');
+                        mainContent.classList.add('visible');
+                        
+                        // Remove loading screen from DOM after animation
+                        setTimeout(() => {
+                            loadingScreen.remove();
+                        }, 800);
+                    }, 400);
+                }
+                loadingBar.style.width = progress + '%';
+            }, 200);
+        })();
+    </script>
+    </div>
+</body>
+</html>
