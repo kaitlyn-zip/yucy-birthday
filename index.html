@@ -98,11 +98,11 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             background: rgba(255, 255, 255, 0.9);
             border: 3px solid #FFB7C5;
-            border-radius: 10px;
+            border-radius: 12px;
             cursor: url('Assets/Cursor/aero_link.ani'), url('Assets/Cursor/aero_arrow.cur'), pointer;
             z-index: 101;
             display: flex;
@@ -126,8 +126,8 @@
         }
 
         .settings-icon {
-            width: 22px;
-            height: 22px;
+            width: 28px;
+            height: 28px;
             transition: transform 0.3s ease;
         }
 
@@ -137,7 +137,7 @@
 
         .control-panel {
             position: fixed;
-            top: 70px;
+            top: 80px;
             right: 20px;
             background: rgba(255, 255, 255, 0.9);
             border: 4px solid #FFB7C5;
@@ -254,8 +254,10 @@
                 inset 0 0 20px rgba(255, 209, 220, 0.3);
             max-width: 90%;
             width: auto;
-            min-width: 300px;
+            min-width: min(300px, 85vw);
             transition: opacity 0.3s ease, visibility 0.3s ease;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
         }
 
         .typewriter-container.hidden {
@@ -265,20 +267,22 @@
 
         .typewriter-text {
             font-family: 'Press Start 2P', cursive;
-            font-size: clamp(16px, 4vw, 32px);
+            font-size: clamp(18px, 5vw, 42px);
             color: #FF6B88;
             text-shadow: 
                 2px 2px 0px #FFB7C5,
                 4px 4px 0px #FFD1DC,
                 0 0 10px rgba(255, 107, 136, 0.5);
             letter-spacing: 2px;
-            white-space: nowrap;
-            display: inline-block;
+            line-height: 1.8;
+            white-space: normal;
+            display: inline;
+            word-break: break-word;
         }
 
         .body-message {
             font-family: 'Press Start 2P', cursive;
-            font-size: clamp(8px, 1.5vw, 12px);
+            font-size: clamp(7px, 1.5vw, 12px);
             color: #FF8FA3;
             line-height: 2.2;
             margin-top: 20px;
@@ -286,6 +290,8 @@
             text-shadow: 1px 1px 0px #FFD1DC;
             opacity: 0;
             transition: opacity 0.5s ease-in;
+            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .body-message.visible {
@@ -422,6 +428,162 @@
 
         .main-content.visible {
             opacity: 1;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .typewriter-container {
+                padding: 15px 20px;
+                top: 10%;
+                max-width: 95%;
+                text-align: center;
+            }
+
+            .typewriter-text {
+                font-size: clamp(16px, 4.5vw, 28px);
+                letter-spacing: 1px;
+            }
+
+            .body-message {
+                font-size: clamp(6px, 1.8vw, 10px);
+                line-height: 2;
+                margin-top: 15px;
+                text-align: center;
+            }
+
+            .settings-btn {
+                width: 46px;
+                height: 46px;
+                top: 15px;
+                right: 15px;
+            }
+
+            .settings-icon {
+                width: 26px;
+                height: 26px;
+            }
+
+            .control-panel {
+                top: 70px;
+                right: 15px;
+                padding: 10px;
+            }
+
+            .control-label {
+                font-size: 7px;
+                min-width: 40px;
+            }
+
+            .character-container {
+                height: 18%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .typewriter-container {
+                padding: 15px 12px;
+                top: 8%;
+                max-width: 96%;
+                min-width: unset;
+                border-width: 3px;
+                text-align: center;
+            }
+
+            .typewriter-text {
+                font-size: clamp(14px, 5vw, 22px);
+                letter-spacing: 0.5px;
+                text-shadow: 
+                    1px 1px 0px #FFB7C5,
+                    2px 2px 0px #FFD1DC,
+                    0 0 5px rgba(255, 107, 136, 0.5);
+            }
+
+            .body-message {
+                font-size: clamp(6px, 2.5vw, 9px);
+                line-height: 1.8;
+                margin-top: 12px;
+                text-align: center;
+            }
+
+            .settings-btn {
+                width: 42px;
+                height: 42px;
+                top: 10px;
+                right: 10px;
+            }
+
+            .settings-icon {
+                width: 24px;
+                height: 24px;
+            }
+
+            .control-panel {
+                top: 60px;
+                right: 10px;
+                padding: 8px;
+                gap: 8px;
+            }
+
+            .control-label {
+                font-size: 6px;
+                min-width: 35px;
+            }
+
+            .control-btn {
+                width: 28px;
+                height: 28px;
+            }
+
+            .progress-container {
+                min-width: 60px;
+            }
+
+            .character-container {
+                height: 15%;
+            }
+
+            .loading-text {
+                font-size: 11px;
+            }
+
+            .loading-sakura {
+                font-size: 45px;
+            }
+
+            .loading-bar-container {
+                width: 160px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .typewriter-container {
+                padding: 10px 12px;
+                top: 5%;
+            }
+
+            .typewriter-text {
+                font-size: clamp(8px, 4.5vw, 14px);
+            }
+
+            .body-message {
+                font-size: clamp(5px, 2.8vw, 8px);
+            }
+
+            .character-container {
+                height: 12%;
+            }
+        }
+
+        /* Handle very wide/short screens */
+        @media (max-height: 500px) {
+            .typewriter-container {
+                top: 5%;
+                padding: 10px 20px;
+            }
+
+            .character-container {
+                height: 25%;
+            }
         }
     </style>
 </head>
